@@ -1,0 +1,23 @@
+{
+  "name": "aws-promises",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/aws",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robbtraister/aws-promises.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/robbtraister/aws-promises/issues"
+  },
+  "homepage": "https://github.com/robbtraister/aws-promises#readme",
+  "dependencies": {
+    "aws-sdk": "^2.9.0",
+    "debug": "^2.6.0"
+  }
+}
