@@ -1,6 +1,6 @@
 {
   "name": "aws-promises",
-  "version": "0.0.17",
+  "version": "0.1.0",
   "description": "",
   "main": "./lib/aws",
   "scripts": {
@@ -18,6 +18,14 @@
   "homepage": "https://github.com/robbtraister/aws-promises#readme",
   "dependencies": {
     "aws-sdk": "^2.9.0",
-    "debug": "^2.6.0"
+    "debug": "^2.6.0",
+    "ini": "^1.3.4"
+  },
+  "bin": {
+    "awssh": "./bin/awssh.js",
+    "decrypt": "./bin/decrypt.js",
+    "encrypt": "./bin/encrypt.js",
+    "generate": "./bin/generate.js",
+    "set-profile": "./bin/set-profile.js"
   }
 }
