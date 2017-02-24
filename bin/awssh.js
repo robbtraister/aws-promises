@@ -47,7 +47,7 @@ function awssh(input) {
       function next() {
         var user = users.shift();
         if (user) {
-          var ssh = child_process.spawn('ssh', ['-i', `/Users/traisterr0-v/.pem/${instance.KeyName}.pem`, `${user}@${instance.PrivateIpAddress}`], {
+          var ssh = child_process.spawn('ssh', ['-i', `${process.env.HOME}/.pem/${instance.KeyName}.pem`, `${user}@${instance.PrivateIpAddress}`], {
             stdio: 'inherit'
           });
           ssh.on('close', (code) => {
