@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
+var ini = require('ini');
 
 var aws = require('../lib/aws');
 
