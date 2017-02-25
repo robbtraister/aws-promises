@@ -16,12 +16,14 @@ In order to complete the ssh session authentication, the pem file in `~/.pem/` d
 
 ## Usage
 
-awssh (<ip-address> | <instance-id> | <alb-name> | <elb-name> | <tg-name>)
+awssh (< ip-address > | < instance-id > | < alb-name > | < elb-name > | < tg-name >)
 
 ## Examples
 
 `awssh i-12345678`
+
 `awssh my-load-balancer`
+
 `AWS_PROFILE=profile2 awssh i-12345678`
 
 
@@ -31,11 +33,12 @@ decrypt attempts to decrypt the provided ciphertext.  decrypt works with either 
 
 ## Usage
 
-decrypt <ciphertext>
+decrypt < ciphertext >
 
 ## Examples
 
 `decrypt AEXbdvwoiu=`
+
 `echo AEXbdvwoiu= | decrypt`
 
 
@@ -47,14 +50,18 @@ encrypt will use the default kms_key_id, unless one is specified.
 
 ## Usage
 
-encrypt <plaintext> [<kms-key-id>]
+encrypt < plaintext > [< kms-key-id >]
 
 ## Examples
 
 `encrypt abc-123`
+
 `encrypt abc-123 arn:aws:kms:us-east-1:12345678:key/abc-def-ghi-jkl`
+
 `echo abc-123 | encrypt`
+
 `echo abc-123 | encrypt arn:aws:kms:us-east-1:12345678:key/abc-def-ghi-jkl`
+
 `KMS_KEY_ID=arn:aws:kms:us-east-1:12345678:key/abc-def-ghi-jkl encrypt abc-123`
 
 
@@ -72,15 +79,20 @@ If `min-length` is not specified, the default is 50.  If `max-length` is not spe
 
 ## Usage
 
-generate [<min-length>[:<max-length>]] [<format>]
+generate [< min-length >[:< max-length >]] [< format >]
 
 ## Examples
 
 `generate`
+
 `generate 20`
+
 `generate 20:30`
+
 `generate base64`
+
 `generate 20:30 utf8`
+
 `generate 50:100 hex | encrypt arn:aws:kms:us-east-1:12345678:key/abc-def-ghi-jkl`
 
 
@@ -90,7 +102,7 @@ set-profile sets the default profile to be used by subsequent AWS command by mod
 
 ## Usage
 
-set-profile <profile>
+set-profile < profile >
 
 ## Examples
 
