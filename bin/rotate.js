@@ -36,26 +36,28 @@ function updateEnvDir() {
 }
 
 
-function rotate(profile, keepOldest) {
+function rotate(profileName, keepOldest) {
+  profileName = profileName || process.env.AWS_PROFILE
+
   var accessKeysPromise = aws.iam.listAccessKeys();
 
   var profilesPromise = readFilePromise(credsFile)
     .then(credsBuf => credsBuf.toString())
     .then(credsContent => ini.decode(credsContent));
 
-  var profilePromise = process.env.AWS_PROFILE
-    ? Promise.resolve(process.env.AWS_PROFILE)
+  var profilePromise = profileName
+    ? Promise.resolve(profileName)
     : Promise.all([
         accessKeysPromise,
         profilesPromise
       ])
         .then(data => {
-          var accessKeyIds = data[0].map((k) => k.AccessKeyId);
-          var profiles = data[1];
+          var accessKeyIds = data.shift().map((k) => k.AccessKeyId);
+          var profiles = data.shift();
 
           return Object.keys(profiles)
-            .filter(profile => profile !== 'default')
-            .find(profile => accessKeyIds.indexOf(profiles[profile].aws_access_key_id) >= 0);
+            .filter(profileName => profileName !== 'default')
+            .find(profileName => accessKeyIds.indexOf(profiles[profileName].aws_access_key_id) >= 0);
         });
 
   var result = Promise.all([
@@ -64,12 +66,13 @@ function rotate(profile, keepOldest) {
     aws.iam.createAccessKey()
   ])
     .then((data) => {
-      var profiles = data[0];
-      var profile = data[1];
-      var accessKey = data[2];
+      var profiles = data.shift();
+      var profileName = data.shift();
+      var accessKey = data.shift();
 
-      profiles[profile].aws_access_key_id = accessKey.AccessKeyId;
-      profiles[profile].aws_secret_access_key = accessKey.SecretAccessKey;
+      profiles[profileName].aws_access_key_id = accessKey.AccessKeyId;
+      profiles[profileName].aws_secret_access_key = accessKey.SecretAccessKey;
+
       return profiles;
     })
     .then(profiles => writeFilePromise(credsFile, ini.encode(profiles)))
