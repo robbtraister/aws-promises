@@ -1,38 +1,40 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
+'use strict'
 
-var ini = require('ini');
+const fs = require('fs')
 
-var promisify = require('../lib/utils/promisify')
+const ini = require('ini')
 
-var credsFile = process.env.AWS_CREDENTIAL_PROFILES_FILE || `${process.env.HOME}/.aws/credentials`;
+const promisify = require('../lib/utils/promisify')
 
-var readFilePromise = promisify(fs.readFile.bind(fs));
-var writeFilePromise = promisify(fs.writeFile.bind(fs));
+const credsFile = process.env.AWS_CREDENTIAL_PROFILES_FILE || `${process.env.HOME}/.aws/credentials`
 
+const readFilePromise = promisify(fs.readFile.bind(fs))
+const writeFilePromise = promisify(fs.writeFile.bind(fs))
 
-function setProfile(p) {
+function setProfile (p) {
   return readFilePromise(credsFile)
     .then(creds => ini.decode(creds.toString()))
     .then(profiles => {
       if (!profiles.hasOwnProperty(p)) {
-        throw `profile '${p}' could not be found`;
+        throw new Error(`profile '${p}' could not be found`)
       }
 
-      var profile = profiles[p];
+      let profile = profiles[p]
       Object.keys(profile)
-        .forEach((k) => {
-          profiles['default'][k] = profile[k];
-        });
+        .forEach(k => {
+          profiles['default'][k] = profile[k]
+        })
 
-      return writeFilePromise(credsFile, ini.encode(profiles));
-    });
+      return writeFilePromise(credsFile, ini.encode(profiles))
+    })
 }
 
+module.exports = setProfile
 
 if (module === require.main) {
   setProfile(process.argv[2])
     .then(null)
-    .catch(console.error);
+    .catch(console.error)
 }

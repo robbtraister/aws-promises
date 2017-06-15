@@ -1,36 +1,39 @@
 #!/usr/bin/env node
 
-var crypto = require('crypto');
+'use strict'
 
+const crypto = require('crypto')
 
-var generate = module.exports = function generate(format, minLength, maxLength) {
-  minLength = Number(minLength);
-  maxLength = Number(maxLength);
+function generate (format, minLength, maxLength) {
+  minLength = Number(minLength)
+  maxLength = Number(maxLength)
 
-  minLength = isNaN(minLength) ? 50 : minLength;
-  maxLength = isNaN(maxLength) ? minLength : maxLength;
+  minLength = isNaN(minLength) ? 50 : minLength
+  maxLength = isNaN(maxLength) ? minLength : maxLength
 
-  var length = minLength + Math.floor(Math.random() * (maxLength - minLength));
-  var bytes = crypto.randomBytes(length);
+  let length = minLength + Math.floor(Math.random() * (maxLength - minLength))
+  let bytes = crypto.randomBytes(length)
 
-  return bytes.toString(format);
+  return bytes.toString(format)
 }
 
+module.exports = generate
+module.exports.generate = generate
 
 if (module === require.main) {
-  var format = 'hex';
-  var minLength = 50;
-  var maxLength = 50;
+  let format = 'hex'
+  let minLength = 50
+  let maxLength = 50
 
   process.argv.forEach(arg => {
-    if (/^\d+(\:\d+)?$/.test(arg)) {
-      var pieces = arg.split(':');
-      minLength = pieces.shift();
-      maxLength = pieces.shift();
+    if (/^\d+(:\d+)?$/.test(arg)) {
+      let pieces = arg.split(':')
+      minLength = pieces.shift()
+      maxLength = pieces.shift()
     } else if (Buffer.isEncoding(arg)) {
-      format = arg;
+      format = arg
     }
-  });
+  })
 
-  console.log(generate(format, minLength, maxLength));
+  console.log(generate(format, minLength, maxLength))
 }

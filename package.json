@@ -1,6 +1,6 @@
 {
   "name": "aws-promises",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "",
   "main": "./lib/aws",
   "scripts": {
@@ -26,6 +26,7 @@
     "decrypt": "./bin/decrypt.js",
     "encrypt": "./bin/encrypt.js",
     "generate": "./bin/generate.js",
+    "rotate": "./bin/rotate.js",
     "set-profile": "./bin/set-profile.js"
   }
 }

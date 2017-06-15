@@ -1,66 +1,68 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var ini = require('ini');
+'use strict'
 
-var aws = require('../lib/aws');
+const fs = require('fs')
+const ini = require('ini')
 
-var promisify = require('../lib/utils/promisify')
+const aws = require('../lib/aws')
 
-var credsFile = process.env.AWS_CREDENTIAL_PROFILES_FILE || `${process.env.HOME}/.aws/credentials`;
+const promisify = require('../lib/utils/promisify')
 
-var readFilePromise = promisify(fs.readFile.bind(fs));
+const credsFile = process.env.AWS_CREDENTIAL_PROFILES_FILE || `${process.env.HOME}/.aws/credentials`
 
+const readFilePromise = promisify(fs.readFile.bind(fs))
 
-function getKeyId(kmsKeyId) {
+function getKeyId (kmsKeyId) {
   if (kmsKeyId && /^arn:aws:kms:/.test(kmsKeyId)) {
-    return Promise.resolve(kmsKeyId);
+    return Promise.resolve(kmsKeyId)
   } else if (process.env.KMS_KEY_ID) {
-    return Promise.resolve(process.env.KMS_KEY_ID);
+    return Promise.resolve(process.env.KMS_KEY_ID)
   } else {
     return readFilePromise(credsFile)
       .then(creds => ini.decode(creds.toString()))
       .then(profiles => {
-        var profileName = [
+        let profileName = [
           kmsKeyId,
           process.env.AWS_PROFILE,
           'default'
-        ].find(profileName => profiles.hasOwnProperty(profileName));
+        ].find(profileName => profiles.hasOwnProperty(profileName))
 
         if (!profileName) {
-          throw `profile '${kmsKeyId}' could not be found`;
+          throw new Error(`profile '${kmsKeyId}' could not be found`)
         }
 
-        return profiles[profileName].kms_key_id;
-      });
+        return profiles[profileName].kms_key_id
+      })
   }
 }
 
+function encryptInput (plaintext, kmsKeyId) {
+  encrypt(plaintext, kmsKeyId)
+    .then(console.log)
+    .catch(console.error)
+}
 
-var encrypt = module.exports = function encrypt(plaintext, kmsKeyId) {
-  var region = process.env.AWS_REGION || 'us-east-1';
+function encrypt (plaintext, kmsKeyId) {
+  let region = process.env.AWS_REGION || 'us-east-1'
 
   return getKeyId(kmsKeyId)
     .then(kmsKeyId => aws.kms(region).encrypt(kmsKeyId, plaintext))
-    .then(data => data.toString('base64'));
+    .then(data => data.toString('base64'))
 }
 
+module.exports = encrypt
+module.exports.encrypt = encrypt
 
 if (module === require.main) {
-  function encryptInput(plaintext, kmsKeyId) {
-    encrypt(plaintext, kmsKeyId)
-      .then(console.log)
-      .catch(console.error);
-  }
-
-  if (process.argv.length < 3 || /^arn\:aws\:kms\:/.test(process.argv[2])) {
+  if (process.argv.length < 3 || /^arn:aws:kms:/.test(process.argv[2])) {
     process.stdin.on('readable', () => {
-      var plaintext = process.stdin.read();
+      let plaintext = process.stdin.read()
       if (plaintext) {
-        encryptInput(plaintext.toString('utf8').replace(/\n$/, ''), process.argv[2]);
+        encryptInput(plaintext.toString('utf8').replace(/\n$/, ''), process.argv[2])
       }
-    });
+    })
   } else {
-    encryptInput(process.argv[2], process.argv[3]);
+    encryptInput(process.argv[2], process.argv[3])
   }
 }
