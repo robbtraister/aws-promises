@@ -21,11 +21,7 @@ function setProfile (p) {
         throw new Error(`profile '${p}' could not be found`)
       }
 
-      let profile = profiles[p]
-      Object.keys(profile)
-        .forEach(k => {
-          profiles['default'][k] = profile[k]
-        })
+      profiles.default = Object.assign(profiles.default || {}, profiles[p])
 
       return writeFilePromise(credsFile, ini.encode(profiles))
     })

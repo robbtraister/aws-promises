@@ -14,9 +14,9 @@ function handler (events) {
   stream.write(JSON.stringify(events, null, 2).slice(1, -2))
 }
 
-let pieces = (process.argv[1] || '').split(':', 2)
+const pieces = (process.argv[1] || '').split(':', 2)
 
-let params = {
+const params = {
   logGroupName: pieces[0],
   handler
 }

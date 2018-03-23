@@ -40,27 +40,27 @@ function updateEnvDir () {
 function rotate (profileName, keepOldest) {
   profileName = profileName || process.env.AWS_PROFILE
 
-  let accessKeysPromise = aws.iam.listAccessKeys()
+  const accessKeysPromise = aws.iam.listAccessKeys()
 
-  let profilesPromise = readFilePromise(credsFile)
+  const profilesPromise = readFilePromise(credsFile)
     .then(credsBuf => credsBuf.toString())
     .then(credsContent => ini.decode(credsContent))
 
-  let setDefaultProfile = !profileName
-  let profilePromise = profileName
+  const setDefaultProfile = !profileName
+  const profilePromise = profileName
     ? Promise.resolve(profileName)
     : Promise.all([
       accessKeysPromise,
       profilesPromise
     ])
-        .then(data => {
-          let accessKeyIds = data.shift().map(k => k.AccessKeyId)
-          let profiles = data.shift()
+      .then(data => {
+        let accessKeyIds = data.shift().map(k => k.AccessKeyId)
+        let profiles = data.shift()
 
-          return Object.keys(profiles)
-            .filter(profileName => profileName !== 'default')
-            .find(profileName => accessKeyIds.indexOf(profiles[profileName].aws_access_key_id) >= 0)
-        })
+        return Object.keys(profiles)
+          .filter(profileName => profileName !== 'default')
+          .find(profileName => accessKeyIds.indexOf(profiles[profileName].aws_access_key_id) >= 0)
+      })
 
   let result = Promise.all([
     profilesPromise,
@@ -68,9 +68,9 @@ function rotate (profileName, keepOldest) {
     aws.iam.createAccessKey()
   ])
     .then(data => {
-      let profiles = data.shift()
-      let profileName = data.shift()
-      let accessKey = data.shift()
+      const profiles = data.shift()
+      const profileName = data.shift()
+      const accessKey = data.shift()
 
       profiles[profileName].aws_access_key_id = accessKey.AccessKeyId
       profiles[profileName].aws_secret_access_key = accessKey.SecretAccessKey

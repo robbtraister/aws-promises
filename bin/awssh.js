@@ -15,7 +15,7 @@ const users = [
 function awssh (input) {
   input = input.trim()
 
-  let region = process.env.AWS_REGION || 'us-east-1'
+  const region = process.env.AWS_REGION || 'us-east-1'
 
   // try an Instance
   return aws.ec2(region).describeInstance(input)
@@ -44,9 +44,9 @@ function awssh (input) {
     })
     .then(instance => {
       function next () {
-        let user = users.shift()
+        const user = users.shift()
         if (user) {
-          let ssh = childProcess.spawn('ssh', ['-i', `${process.env.HOME}/.pem/${instance.KeyName}.pem`, `${user}@${instance.PrivateIpAddress}`], {
+          const ssh = childProcess.spawn('ssh', ['-i', `${process.env.HOME}/.pem/${instance.KeyName}.pem`, `${user}@${instance.PrivateIpAddress}`], {
             stdio: 'inherit'
           })
           ssh.on('close', (code) => {

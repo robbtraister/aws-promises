@@ -14,27 +14,25 @@ const credsFile = process.env.AWS_CREDENTIAL_PROFILES_FILE || `${process.env.HOM
 const readFilePromise = promisify(fs.readFile.bind(fs))
 
 function getKeyId (kmsKeyId) {
-  if (kmsKeyId && /^arn:aws:kms:/.test(kmsKeyId)) {
-    return Promise.resolve(kmsKeyId)
-  } else if (process.env.KMS_KEY_ID) {
-    return Promise.resolve(process.env.KMS_KEY_ID)
-  } else {
-    return readFilePromise(credsFile)
-      .then(creds => ini.decode(creds.toString()))
-      .then(profiles => {
-        let profileName = [
-          kmsKeyId,
-          process.env.AWS_PROFILE,
-          'default'
-        ].find(profileName => profiles.hasOwnProperty(profileName))
+  return (kmsKeyId && /^arn:aws:kms:/.test(kmsKeyId))
+    ? Promise.resolve(kmsKeyId)
+    : (process.env.KMS_KEY_ID)
+      ? Promise.resolve(process.env.KMS_KEY_ID)
+      : readFilePromise(credsFile)
+        .then(creds => ini.decode(creds.toString()))
+        .then(profiles => {
+          let profileName = [
+            kmsKeyId,
+            process.env.AWS_PROFILE,
+            'default'
+          ].find(profileName => profiles.hasOwnProperty(profileName))
 
-        if (!profileName) {
-          throw new Error(`profile '${kmsKeyId}' could not be found`)
-        }
+          if (!profileName) {
+            throw new Error(`profile '${kmsKeyId}' could not be found`)
+          }
 
-        return profiles[profileName].kms_key_id
-      })
-  }
+          return profiles[profileName].kms_key_id
+        })
 }
 
 function encryptInput (plaintext, kmsKeyId) {
@@ -44,7 +42,7 @@ function encryptInput (plaintext, kmsKeyId) {
 }
 
 function encrypt (plaintext, kmsKeyId) {
-  let region = process.env.AWS_REGION || 'us-east-1'
+  const region = process.env.AWS_REGION || 'us-east-1'
 
   return getKeyId(kmsKeyId)
     .then(kmsKeyId => aws.kms(region).encrypt(kmsKeyId, plaintext))

@@ -11,7 +11,7 @@ function decryptInput (input) {
 }
 
 function decrypt (ciphertext) {
-  let region = process.env.AWS_REGION || 'us-east-1'
+  const region = process.env.AWS_REGION || 'us-east-1'
 
   return aws.kms(region).decrypt(ciphertext, true)
     .then(data => {
