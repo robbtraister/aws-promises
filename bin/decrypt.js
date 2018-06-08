@@ -2,7 +2,7 @@
 
 'use strict'
 
-const aws = require('../lib/aws')
+const { KMS } = require('../lib/aws')
 
 function decryptInput (input) {
   decrypt(input)
@@ -13,7 +13,7 @@ function decryptInput (input) {
 function decrypt (ciphertext) {
   const region = process.env.AWS_REGION || 'us-east-1'
 
-  return aws.kms(region).decrypt(ciphertext, true)
+  return KMS({region}).decrypt(ciphertext, true)
     .then(data => {
       data.Plaintext = data.Plaintext.toString('utf8')
       return data

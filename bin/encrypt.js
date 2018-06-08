@@ -5,7 +5,7 @@
 const fs = require('fs')
 const ini = require('ini')
 
-const aws = require('../lib/aws')
+const { KMS } = require('../lib/aws')
 
 const promisify = require('../lib/utils/promisify')
 
@@ -45,7 +45,7 @@ function encrypt (plaintext, kmsKeyId) {
   const region = process.env.AWS_REGION || 'us-east-1'
 
   return getKeyId(kmsKeyId)
-    .then(kmsKeyId => aws.kms(region).encrypt(kmsKeyId, plaintext))
+    .then(kmsKeyId => KMS({region}).encrypt(kmsKeyId, plaintext))
     .then(data => data.toString('base64'))
 }
 

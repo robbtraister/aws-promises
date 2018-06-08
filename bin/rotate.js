@@ -7,7 +7,7 @@ const fs = require('fs')
 
 const ini = require('ini')
 
-const aws = require('..')
+const { IAM } = require('../lib/aws')
 
 const promisify = require('../lib/utils/promisify')
 
@@ -40,7 +40,8 @@ function updateEnvDir () {
 function rotate (profileName, keepOldest) {
   profileName = profileName || process.env.AWS_PROFILE
 
-  const accessKeysPromise = aws.iam.listAccessKeys()
+  const iam = IAM()
+  const accessKeysPromise = iam.listAccessKeys()
 
   const profilesPromise = readFilePromise(credsFile)
     .then(credsBuf => credsBuf.toString())
@@ -65,7 +66,7 @@ function rotate (profileName, keepOldest) {
   let result = Promise.all([
     profilesPromise,
     profilePromise,
-    aws.iam.createAccessKey()
+    iam.createAccessKey()
   ])
     .then(data => {
       const profiles = data.shift()
@@ -85,7 +86,7 @@ function rotate (profileName, keepOldest) {
       .then(() => accessKeysPromise)
       .then(keys => keys.sort((a, b) => a.CreateDate - b.CreateDate).shift())
       // .then(oldestKey => aws.iam.deactivateAccessKey(oldestKey.AccessKeyId))
-      .then(oldestKey => aws.iam.deleteAccessKey(oldestKey.AccessKeyId))
+      .then(oldestKey => iam.deleteAccessKey(oldestKey.AccessKeyId))
   }
 
   if (setDefaultProfile) {

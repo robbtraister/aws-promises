@@ -1,6 +1,6 @@
 'use strict'
 
-const logs = require('../lib/aws').logs
+const { Logs } = require('../lib/aws')
 
 const stream = process.stdout
 
@@ -26,8 +26,7 @@ if (pieces.length > 1) {
 }
 
 stream.write('[')
-logs.awsApi
-  .then(api => api.filterLogEvents(params))
+Logs.filterLogEvents(params)
   .then(() => {
     stream.write('\n]')
     stream.end()

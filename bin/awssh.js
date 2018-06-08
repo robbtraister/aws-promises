@@ -4,7 +4,7 @@
 
 const childProcess = require('child_process')
 
-const aws = require('../lib/aws')
+const { ALB, EC2, ELB } = require('../lib/aws')
 
 const users = [
   'centos',
@@ -17,8 +17,9 @@ function awssh (input) {
 
   const region = process.env.AWS_REGION || 'us-east-1'
 
+  const ec2 = EC2({region})
   // try an Instance
-  return aws.ec2(region).describeInstance(input)
+  return ec2.describeInstance(input)
     .then(instance => {
       if (instance) {
         return instance
@@ -27,20 +28,21 @@ function awssh (input) {
     })
     .catch(() => {
       // No Instance; try an ELB
-      return aws.elb(region).describeLoadBalancer(input)
+      return ELB({region}).describeLoadBalancer(input)
         .then(elb => elb.Instances[0].InstanceId)
         .catch(() => {
+          const alb = ALB({region})
           // No ELB; try a TG
-          return aws.alb(region).getTargetGroupArn(input)
+          return alb.getTargetGroupArn(input)
             .catch(() => {
               // No TG; try an ALB
-              return aws.alb(region).describeListeners(input)
+              return alb.describeListeners(input)
                 .then(listeners => listeners[0].DefaultActions[0].TargetGroupArn)
             })
-            .then(tgArn => aws.alb(region).listTargets(tgArn))
+            .then(tgArn => alb.listTargets(tgArn))
             .then(targets => targets[0].Target.Id)
         })
-        .then(instanceId => aws.ec2(region).describeInstance(instanceId))
+        .then(instanceId => ec2.describeInstance(instanceId))
     })
     .then(instance => {
       function next () {
