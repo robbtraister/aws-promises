@@ -21,7 +21,7 @@ function setProfile (p) {
         throw new Error(`profile '${p}' could not be found`)
       }
 
-      profiles.default = Object.assign(profiles.default || {}, profiles[p])
+      profiles.default = Object.assign({}, profiles[p])
 
       return writeFilePromise(credsFile, ini.encode(profiles))
     })
