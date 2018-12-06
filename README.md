@@ -1,6 +1,6 @@
 # aws-promises
 
-This package wraps many of the most common commands from the nodejs [AWS-SKD](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html) into throttled, untokenized promises.
+This package wraps many of the most common commands from the nodejs [AWS-SDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html) into throttled, untokenized promises.
 
 ## lib
 
