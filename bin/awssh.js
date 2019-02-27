@@ -17,7 +17,7 @@ function awssh (input) {
 
   const region = process.env.AWS_REGION || 'us-east-1'
 
-  const ec2 = EC2({region})
+  const ec2 = EC2({ region })
   // try an Instance
   return ec2.describeInstance(input)
     .then(instance => {
@@ -28,10 +28,10 @@ function awssh (input) {
     })
     .catch(() => {
       // No Instance; try an ELB
-      return ELB({region}).describeLoadBalancer(input)
+      return ELB({ region }).describeLoadBalancer(input)
         .then(elb => elb.Instances[0].InstanceId)
         .catch(() => {
-          const alb = ALB({region})
+          const alb = ALB({ region })
           // No ELB; try a TG
           return alb.getTargetGroupArn(input)
             .catch(() => {

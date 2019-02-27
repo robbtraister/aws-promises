@@ -13,7 +13,7 @@ function decryptInput (input, field) {
 function decrypt (ciphertext, field) {
   const region = process.env.AWS_REGION || 'us-east-1'
 
-  return KMS({region}).decrypt(ciphertext, true)
+  return KMS({ region }).decrypt(ciphertext, true)
     .then(data => {
       data.Plaintext = data.Plaintext.toString('utf8')
       return data

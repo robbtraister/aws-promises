@@ -4,7 +4,7 @@
 
 const crypto = require('crypto')
 
-function generate ({format, minLength, maxLength}) {
+function generate ({ format, minLength, maxLength }) {
   minLength = Number(minLength)
   maxLength = Number(maxLength)
 

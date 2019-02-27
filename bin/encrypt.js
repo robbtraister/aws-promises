@@ -45,7 +45,7 @@ function encrypt (plaintext, kmsKeyId) {
   const region = process.env.AWS_REGION || 'us-east-1'
 
   return getKeyId(kmsKeyId)
-    .then(kmsKeyId => KMS({region}).encrypt(kmsKeyId, plaintext))
+    .then(kmsKeyId => KMS({ region }).encrypt(kmsKeyId, plaintext))
     .then(data => data.toString('base64'))
 }
 
